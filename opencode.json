@@ -1,0 +1,13 @@
+{
+	"$schema": "https://opencode.ai/config.json",
+	"provider": {
+		"openai-oauth": {
+			"npm": "@ai-sdk/openai-compatible",
+			"name": "OpenAI OAuth (ChatGPT)",
+			"options": {
+				"baseURL": "http://127.0.0.1:10531/v1"
+			}
+		}
+	},
+	"model": "openai-oauth/gpt-5.4"
+}

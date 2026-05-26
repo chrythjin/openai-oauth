@@ -1,0 +1,8 @@
+# ⚠️ Deprecated — 현재 설정은 `~/.config/opencode/opencode.json` 참고
+#
+# 이 파일은 MANUAL용 샘플 메모입니다.
+# 실제 설정은 사용자 홈디렉토리의 opencode.json을 source of truth로 사용합니다.
+#
+# 핵심 값(현재 로컬):
+#   - provider.openai-oauth.options.baseURL = http://127.0.0.1:10531/v1
+#   - provider.openai-oauth.options.apiKey = oauth

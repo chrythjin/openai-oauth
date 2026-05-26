@@ -1,0 +1,17 @@
+$ turbo run typecheck
+• turbo 2.8.17
+• Packages in scope: openai-oauth, openai-oauth-core, openai-oauth-dashboard, openai-oauth-provider
+• Running typecheck in 4 packages
+• Remote caching disabled
+openai-oauth-core:typecheck: cache hit, replaying logs 2e39fe088ca0b240
+openai-oauth-core:typecheck: $ tsc --noEmit
+openai-oauth-dashboard:typecheck: cache hit, replaying logs 71572b7c5f68c6e6
+openai-oauth-dashboard:typecheck: $ tsc --noEmit
+openai-oauth-provider:typecheck: cache hit, replaying logs d07872ee97a194f9
+openai-oauth-provider:typecheck: $ tsc --noEmit
+openai-oauth:typecheck: cache hit, replaying logs 59f6ae76ee501610
+openai-oauth:typecheck: $ tsc --noEmit
+
+ Tasks:    4 successful, 4 total
+Cached:    4 cached, 4 total
+  Time:    249ms >>> FULL TURBO

@@ -1,0 +1,16 @@
+  % Total    % Received % Xferd  Average Speed  Time    Time    Time   Current
+                                 Dload  Upload  Total   Spent   Left   Speed
+
+  0      0   0      0   0      0      0      0                              0
+100    385   0    385   0      0  15702      0                              0
+100    385   0    385   0      0  15642      0                              0
+100    385   0    385   0      0  15539      0                              0
+HTTP/1.1 200 OK
+Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; object-src 'none'; base-uri 'none'; frame-ancestors 'none'
+Content-Type: application/json; charset=utf-8
+Referrer-Policy: no-referrer
+X-Content-Type-Options: nosniff
+Date: Sun, 17 May 2026 23:20:08 GMT
+Transfer-Encoding: chunked
+
+{"slots":[{"slot":1,"label":"Account 1","active":false,"inVault":true,"expiry":null},{"slot":2,"label":"Account 2","active":false,"inVault":true,"expiry":null},{"slot":3,"label":"Account 3","active":false,"inVault":true,"expiry":null},{"slot":4,"label":"Account 4","active":true,"inVault":true,"expiry":null},{"slot":5,"label":"Account 5","active":false,"inVault":true,"expiry":null}]}

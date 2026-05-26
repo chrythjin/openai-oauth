@@ -1,0 +1,53 @@
+{
+	"$schema": "https://biomejs.dev/schemas/2.3.10/schema.json",
+	"files": {
+		"includes": [
+			"**",
+			"!**/dist",
+			"!**/node_modules",
+			"!**/.turbo",
+			"!**/openai-oauth MANUAL",
+			"!**/.graphify_*.json",
+			"!**/.opencode",
+			"!**/graphify-out",
+			"!**/mcp-temp",
+			"!**/opencode.json",
+			"!**/scratch",
+			"!**/token-rotator-config.json",
+			"!**/token-config.json",
+			"!**/mcp-backup.zip",
+			"!**/query",
+			"!**/stop",
+			"!**/usage.sqlite",
+			"!**/.playwright-mcp",
+			"!**/.serena",
+			"!**/.sisyphus",
+			"!**/.tmp-test",
+			"!**/.design-md"
+		]
+	},
+	"formatter": {
+		"enabled": true,
+		"indentStyle": "tab"
+	},
+	"linter": {
+		"enabled": true,
+		"rules": {
+			"recommended": true
+		}
+	},
+	"javascript": {
+		"formatter": {
+			"quoteStyle": "double",
+			"semicolons": "asNeeded"
+		}
+	},
+	"assist": {
+		"enabled": true,
+		"actions": {
+			"source": {
+				"organizeImports": "on"
+			}
+		}
+	}
+}

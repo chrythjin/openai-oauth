@@ -1,0 +1,1 @@
+Code style: TypeScript, tabs for indentation, double quotes, semicolons as needed, ES2022/NodeNext. Uses Biome instead of ESLint. Avoid as any and @ts-ignore. Do not expose auth tokens or account IDs in default logs. Auth files are password-equivalent and must never be committed. Prefer minimal default logging with env-gated debug/verbose output.

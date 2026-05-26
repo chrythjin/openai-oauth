@@ -1,0 +1,36 @@
+{
+	"name": "openai-oauth-mcp",
+	"version": "1.0.0",
+	"description": "MCP server for managing the local openai-oauth proxy.",
+	"type": "module",
+	"bin": {
+		"openai-oauth-mcp": "./dist/index.js"
+	},
+	"exports": {
+		".": {
+			"default": "./dist/index.js"
+		}
+	},
+	"files": [
+		"dist"
+	],
+	"scripts": {
+		"build": "tsup src/index.ts --format esm --outDir dist --clean",
+		"prepublishOnly": "bun run build",
+		"typecheck": "tsc --project tsconfig.build.json --noEmit"
+	},
+	"dependencies": {
+		"@modelcontextprotocol/sdk": "1.29.0",
+		"zod": "4.3.6"
+	},
+	"devDependencies": {
+		"@types/node": "20.17.24",
+		"typescript": "latest"
+	},
+	"author": "EvanZhouDev",
+	"license": "AGPL-3.0-only",
+	"bugs": {
+		"url": "https://github.com/EvanZhouDev/openai-oauth/issues"
+	},
+	"homepage": "https://github.com/EvanZhouDev/openai-oauth#readme"
+}

@@ -1,0 +1,101 @@
+docs/MANAGE_TOKEN_GUIDE.md               | 16 +++++++++++++
+ docs/OPERATIONS.md                       | 41 ++++++++++++++++++++++++++++++++
+ docs/dashboard/DASHBOARD_APPLIED_PLAN.md | 20 ++++++++++++++++
+ 3 files changed, 77 insertions(+)
+
+--- Changes ---
+
+docs/MANAGE_TOKEN_GUIDE.md
+  @@ -262,6 +262,22 @@ macOS/Linux에서는 `bun run token` 메뉴가 같은 번호 구성을 제공하
+  +## Dashboard Token Management
+  +
+  +After CLI login, you can also manage tokens via the dashboard:
+  +
+  +1. Open `http://127.0.0.1:10531/dashboard`
+  +2. Go to the Tokens tab
+  +3. Click "Save current auth as slot" to store current authentication
+  +4. Use Switch/Rotate/Delete as needed
+  +
+  +Note: Switch and rotate operations require restarting the proxy:
+  +```powershell
+  +.codex\launchers\manage-tokens.bat restart
+  +```
+  +
+  +---
+  +
+   ## 5. 서버 구조와 관련 파일
+   
+   ### 5.1 주요 런처
+  +16 -0
+
+docs/OPERATIONS.md
+  @@ -25,6 +25,47 @@
+  +## Dashboard
+  +
+  +The proxy serves a local dashboard at `http://127.0.0.1:10531/dashboard`.
+  +
+  +### Token Management
+  +
+  +The dashboard provides a visual interface for managing token slots:
+  +
+  +- **Usage tab**: View request statistics, hourly usage charts, and recent logs
+  +- **Tokens tab**: Manage token slots (save, switch, rotate, delete)
+  +
+  +#### Saving Current Auth
+  +
+  +After logging in via CLI, click "Save current auth as slot" in the Tokens tab to store the current authentication as a vault slot.
+  +
+  +#### Switching Tokens
+  +
+  +Click "Switch" on an inactive slot to activate it. This requires a proxy restart:
+  +
+  +```powershell
+  +.codex\launchers\manage-tokens.bat restart
+  +```
+  +
+  +#### Rotating Tokens
+  +
+  +Click "Rotate" to cycle to the next available token. This also requires a restart.
+  +
+  +#### Deleting Tokens
+  +
+  +Click "Delete" on an inactive slot to remove it. Active slots cannot be deleted.
+  +
+  +### Security Notes
+  +
+  +- Dashboard is localhost-only
+  +- No browser login/logout popup flows
+  +- No custom sourcePath imports
+  +- No self-restart capability
+  +- Token data is redacted in API responses
+  +
+  +---
+  +
+   ## 2. 윈도우 서비스 (NSSM) 상세 정보
+   
+   배포 자동화와 상시 실행을 위해 `nssm`을 통해 서비스로 등록되어 있습니다.
+  +41 -0
+
+docs/dashboard/DASHBOARD_APPLIED_PLAN.md
+  @@ -166,3 +166,23 @@ packages/openai-oauth-dashboard/
+  +
+  +---
+  +
+  +## Account Management Features
+  +
+  +Implemented:
+  +- [x] Token slot listing
+  +- [x] Save current auth as slot
+  +- [x] Switch between slots (with restart required)
+  +- [x] Rotate tokens (with restart required)
+  +- [x] Delete inactive slots
+  +- [x] Usage statistics and charts
+  +- [x] API error handling
+  +
+  +Out of scope:
+  +- Browser login/logout popup flows
+  +- Custom sourcePath imports
+  +- Self-restart capability
+  +- Multi-user/admin authentication
+  +- Live Codex quota checks
+  +20 -0

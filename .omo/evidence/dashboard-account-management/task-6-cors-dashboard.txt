@@ -1,0 +1,19 @@
+  % Total    % Received % Xferd  Average Speed  Time    Time    Time   Current
+                                 Dload  Upload  Total   Spent   Left   Speed
+
+  0      0   0      0   0      0      0      0                              0
+100     72   0     72   0      0   1016      0                              0
+100     72   0     72   0      0   1015      0                              0
+100     72   0     72   0      0   1013      0                              0
+HTTP/1.1 200 OK
+Access-Control-Allow-Headers: authorization,content-type
+Access-Control-Allow-Methods: GET,POST,OPTIONS
+Access-Control-Allow-Origin: *
+Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; object-src 'none'; base-uri 'none'; frame-ancestors 'none'
+Content-Type: application/json; charset=utf-8
+Referrer-Policy: no-referrer
+X-Content-Type-Options: nosniff
+Date: Sun, 17 May 2026 23:20:17 GMT
+Transfer-Encoding: chunked
+
+{"totalRequests":0,"totalTokens":0,"errorCount":0,"uptime":"7h 27m 20s"}

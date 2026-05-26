@@ -1,0 +1,52 @@
+$ turbo run build
+??turbo 2.8.17
+??Packages in scope: openai-oauth, openai-oauth-core, openai-oauth-dashboard, openai-oauth-provider
+??Running build in 4 packages
+??Remote caching disabled
+openai-oauth-dashboard:build: cache miss, executing f00a2a67787d8741
+openai-oauth-core:build: cache hit, replaying logs b844d41e7f0c11d6
+openai-oauth-core:build: $ tsc -p tsconfig.build.json
+openai-oauth-provider:build: cache hit, replaying logs 826d13b7843caabb
+openai-oauth-provider:build: $ tsup src/index.ts --format esm --outDir dist --clean
+openai-oauth-provider:build: [34mCLI[39m Building entry: src/index.ts
+openai-oauth-provider:build: [34mCLI[39m Using tsconfig: tsconfig.json
+openai-oauth-provider:build: [34mCLI[39m tsup v8.5.1
+openai-oauth-provider:build: [34mCLI[39m Target: es2022
+openai-oauth-provider:build: [34mCLI[39m Cleaning output folder
+openai-oauth-provider:build: [34mESM[39m Build start
+openai-oauth-provider:build: [32mESM[39m [1mdist\index.js [22m[32m29.45 KB[39m
+openai-oauth-provider:build: [32mESM[39m ?∽툘 Build success in 83ms
+openai-oauth:build: cache hit, replaying logs 048f443d08650b5e
+openai-oauth:build: $ tsup src/index.ts src/cli.ts --format esm --outDir dist --clean --external bun:sqlite && bun run copy-dashboard
+openai-oauth:build: [34mCLI[39m Building entry: src/cli.ts, src/index.ts
+openai-oauth:build: [34mCLI[39m Using tsconfig: tsconfig.json
+openai-oauth:build: [34mCLI[39m tsup v8.5.1
+openai-oauth:build: [34mCLI[39m Target: es2022
+openai-oauth:build: [34mCLI[39m Cleaning output folder
+openai-oauth:build: [34mESM[39m Build start
+openai-oauth:build: [32mESM[39m [1mdist\cli.js            [22m[32m10.86 KB[39m
+openai-oauth:build: [32mESM[39m [1mdist\index.js          [22m[32m223.00 B[39m
+openai-oauth:build: [32mESM[39m [1mdist\chunk-PI6L3JPC.js [22m[32m837.19 KB[39m
+openai-oauth:build: [32mESM[39m ?∽툘 Build success in 343ms
+openai-oauth:build: $ bun scripts/copy-dashboard.ts
+openai-oauth:build: Dashboard copied to dist/dashboard
+openai-oauth-dashboard:build: $ vite build
+openai-oauth-dashboard:build: [36mvite v6.4.2 [32mbuilding for production...[36m[39m
+openai-oauth-dashboard:build: transforming...
+openai-oauth-dashboard:build: [32m??[39m 650 modules transformed.
+openai-oauth-dashboard:build: rendering chunks...
+openai-oauth-dashboard:build: computing gzip size...
+openai-oauth-dashboard:build: [2mdist/[22m[32mindex.html                 [39m[1m[2m  0.44 kB[22m[1m[22m[2m ??gzip:   0.29 kB[22m
+openai-oauth-dashboard:build: [2mdist/[22m[35massets/index-DYcfCtkw.css  [39m[1m[2m  6.80 kB[22m[1m[22m[2m ??gzip:   1.71 kB[22m
+openai-oauth-dashboard:build: [2mdist/[22m[36massets/index-_waO8wbW.js   [39m[1m[33m591.68 kB[39m[22m[2m ??gzip: 171.04 kB[22m
+openai-oauth-dashboard:build: [33m
+openai-oauth-dashboard:build: (!) Some chunks are larger than 500 kB after minification. Consider:
+openai-oauth-dashboard:build: - Using dynamic import() to code-split the application
+openai-oauth-dashboard:build: - Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+openai-oauth-dashboard:build: - Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.[39m
+openai-oauth-dashboard:build: [32m??built in 7.31s[39m
+
+ Tasks:    4 successful, 4 total
+Cached:    3 cached, 4 total
+  Time:    8.858s 
+

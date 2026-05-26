@@ -1,0 +1,29 @@
+Dashboard CORS Removal Test Results
+====================================
+Date: 2026-05-18
+Command: bun test packages/openai-oauth/test/dashboard-api.test.ts
+
+Output:
+-------
+bun test v1.3.14 (0d9b296a)
+
+ 11 pass
+ 0 fail
+ 21 expect() calls
+Ran 11 tests across 1 file. [396.00ms]
+
+Tests:
+------
+- should return real summary data from SQLite
+- should return recent logs in LogEntry format
+- should return status with active token info
+- should return hourly stats in buckets
+- should not emit wildcard CORS on summary route
+- should not emit wildcard CORS on logs route
+- should not emit wildcard CORS on status route
+- should not emit wildcard CORS on hourly route
+- should not emit wildcard CORS on 404 route
+- should handle OPTIONS with localhost-only CORS
+- should fallback to localhost origin when no origin header on OPTIONS
+
+All tests passed.

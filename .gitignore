@@ -1,0 +1,33 @@
+node_modules
+dist
+coverage
+.turbo
+mcp-temp/
+
+# Token files (never commit these)
+*.json
+!package.json
+!biome.json
+!turbo.json
+!tsconfig.json
+!tsconfig.*.json
+!opencode.json
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# OpenCode & Graphify (large/ephemeral)
+.opencode/
+graphify-out/
+.graphify_*.json
+mcp-temp/
+mcp-backup.zip
+query
+stop
+usage.sqlite
+.playwright-mcp/
+.serena/
+.sisyphus/
+.tmp-test/
+.design-md/
