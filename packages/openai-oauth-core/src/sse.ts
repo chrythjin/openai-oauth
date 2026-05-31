@@ -63,6 +63,35 @@ export async function* iterateServerSentEvents(
 const isRecord = (value: unknown): value is Record<string, unknown> =>
 	typeof value === "object" && value !== null && !Array.isArray(value)
 
+const summarizeUpstreamError = (value: unknown): string => {
+	// Only surface a small, known set of fields rather than JSON.stringify-ing
+	// the entire upstream payload into an error message (which can then end up
+	// in logs). Falls back to a generic label when nothing useful is present.
+	const source = isRecord(value)
+		? isRecord(value.error)
+			? value.error
+			: value
+		: undefined
+
+	if (source) {
+		const type = typeof source.type === "string" ? source.type : undefined
+		const code =
+			typeof source.code === "string" || typeof source.code === "number"
+				? String(source.code)
+				: undefined
+		const message =
+			typeof source.message === "string" ? source.message : undefined
+		const parts = [type ?? code, message].filter(
+			(part): part is string => typeof part === "string" && part.length > 0,
+		)
+		if (parts.length > 0) {
+			return parts.join(": ")
+		}
+	}
+
+	return "upstream error"
+}
+
 export const collectCompletedResponseFromSse = async (
 	stream: ReadableStream<Uint8Array>,
 ): Promise<Record<string, unknown>> => {
@@ -97,6 +126,8 @@ export const collectCompletedResponseFromSse = async (
 	}
 
 	throw new Error(
-		`No completed response found in SSE stream.${latestError ? ` Last error: ${JSON.stringify(latestError)}` : ""}`,
+		`No completed response found in SSE stream.${
+			latestError ? ` Last error: ${summarizeUpstreamError(latestError)}` : ""
+		}`,
 	)
 }

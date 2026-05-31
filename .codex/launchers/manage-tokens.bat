@@ -1,7 +1,7 @@
 @echo off
 setlocal
 set "SHOULD_PAUSE=0"
-cd /d "C:\NEW PRG\openai-oauth"
+cd /d "%~dp0..\.."
 
 if /I "%~1"=="status" goto service_status
 if /I "%~1"=="start" goto service_start

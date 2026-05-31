@@ -286,7 +286,25 @@ export const writeWebResponse = async (
 		console.error(
 			"[proxy] Response body is already locked. This may indicate a double-read bug.",
 		)
-		response.end()
+		// Don't return an empty success body: the client would silently receive
+		// a blank response. Surface a real 502 so callers can detect the fault.
+		// setHeader/statusCode are still mutable here because Node has not
+		// flushed the head until the first write/end.
+		if (!response.headersSent) {
+			response.statusCode = 502
+			response.setHeader("content-type", "application/json; charset=utf-8")
+			response.end(
+				JSON.stringify({
+					error: {
+						message:
+							"Proxy could not read the upstream response body (already consumed).",
+						type: "server_error",
+					},
+				}),
+			)
+		} else {
+			response.end()
+		}
 		return
 	}
 

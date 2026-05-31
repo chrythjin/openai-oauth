@@ -227,20 +227,56 @@ const toAuthFile = (input: Record<string, unknown>): AuthFile => {
 
 const readAuthFile = async (candidates: string[]): Promise<AuthReadResult> => {
 	for (const candidate of candidates) {
+		let content: string
 		try {
-			const content = await fs.readFile(candidate, "utf-8")
+			content = await fs.readFile(candidate, "utf-8")
+		} catch (error) {
+			// ENOENT is expected while probing candidate paths, so skip it
+			// silently. Anything else (EACCES, EISDIR, ...) means the file is
+			// present but unreadable; surface it under debug so a locked or
+			// misconfigured auth file is not mistaken for "not found".
+			const code = (error as NodeJS.ErrnoException | undefined)?.code
+			if (code !== "ENOENT" && AUTH_DEBUG_ENABLED) {
+				console.warn(
+					`[openai-oauth:auth] failed to read ${candidate}: ${
+						error instanceof Error ? error.message : String(error)
+					}`,
+				)
+			}
+			continue
+		}
+
+		try {
 			const parsed = JSON.parse(content.replace(/^\uFEFF/, ""))
 			if (isRecord(parsed)) {
 				return { path: candidate, data: toAuthFile(parsed) }
 			}
-		} catch {}
+			if (AUTH_DEBUG_ENABLED) {
+				console.warn(
+					`[openai-oauth:auth] ${candidate} did not contain a JSON object; skipping.`,
+				)
+			}
+		} catch (error) {
+			// Corrupt JSON is actionable and rare: always surface it rather than
+			// silently treating the file as absent, which produces a misleading
+			// "ChatGPT access token not found" downstream.
+			console.warn(
+				`[openai-oauth:auth] ${candidate} is not valid JSON: ${
+					error instanceof Error ? error.message : String(error)
+				}`,
+			)
+		}
 	}
 
 	return {}
 }
 
 const ensureDirectory = async (filePath: string): Promise<void> => {
-	await fs.mkdir(path.dirname(filePath), { recursive: true })
+	// auth.json holds password-equivalent refresh tokens. Create the containing
+	// directory with owner-only permissions (0o700) so a loose process umask
+	// cannot leave it group/other-readable on multi-user POSIX systems. On
+	// Windows the mode is ignored in favour of inherited ACLs.
+	await fs.mkdir(path.dirname(filePath), { recursive: true, mode: 0o700 })
 }
 
 const writeAuthFile = async (
@@ -396,13 +432,13 @@ export const loadAuthTokens = async (
 
 	if (typeof accessToken !== "string" || accessToken.length === 0) {
 		throw new Error(
-			"ChatGPT access token not found. Run `codex login` to create auth.json.",
+			"ChatGPT access token not found. Run `npx @openai/codex login` to create auth.json.",
 		)
 	}
 
 	if (typeof accountId !== "string" || accountId.length === 0) {
 		throw new Error(
-			"ChatGPT account id not found in auth.json. Run `codex login` to create auth.json.",
+			"ChatGPT account id not found in auth.json. Run `npx @openai/codex login` to create auth.json.",
 		)
 	}
 

@@ -356,8 +356,19 @@ export const createCodexOAuthFetch = (
 		)
 	}
 
-	if (typeof (fetch as any).preconnect === "function") {
-		;(codexFetch as any).preconnect = (fetch as any).preconnect.bind(fetch)
+	// NOTE: intentionally no proxy-imposed request timeout here. Long reasoning
+	// models can legitimately run for many minutes; forwarding only the
+	// caller's abort signal (and never an internal deadline) is what prevents
+	// premature "operation timed out" failures. Do not add AbortSignal.timeout.
+	const inner = fetch as FetchFunction & {
+		preconnect?: (...args: unknown[]) => unknown
+	}
+	if (typeof inner.preconnect === "function") {
+		;(
+			codexFetch as FetchFunction & {
+				preconnect?: (...args: unknown[]) => unknown
+			}
+		).preconnect = inner.preconnect.bind(fetch)
 	}
 
 	return codexFetch

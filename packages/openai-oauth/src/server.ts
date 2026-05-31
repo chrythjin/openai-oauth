@@ -191,8 +191,40 @@ export const startOpenAIOAuthServer = async (
 ): Promise<RunningOpenAIOAuthServer> => {
 	const host = settings.host ?? DEFAULT_HOST
 	const port = settings.port ?? DEFAULT_PORT
+
+	// This proxy serves unauthenticated endpoints, including the token vault
+	// management API (/api/tokens/*). Binding to anything other than loopback
+	// exposes password-equivalent credentials to the network, so warn loudly.
+	const LOCAL_BIND_HOSTS = new Set(["127.0.0.1", "localhost", "::1"])
+	if (!LOCAL_BIND_HOSTS.has(host)) {
+		console.warn(
+			`[proxy] WARNING: binding to non-localhost host "${host}". ` +
+				"Unauthenticated endpoints (including the token vault API) will be " +
+				"reachable from other machines. Only do this on a trusted, " +
+				"firewalled network.",
+		)
+	}
+
 	const handler = createOpenAIOAuthFetchHandler(settings)
+
+	// Track in-flight requests so shutdown can drain them instead of cutting
+	// active responses off mid-stream.
+	let inFlight = 0
+	const idleWaiters = new Set<() => void>()
+	const onRequestSettled = () => {
+		inFlight -= 1
+		if (inFlight <= 0) {
+			inFlight = 0
+			for (const waiter of idleWaiters) {
+				waiter()
+			}
+			idleWaiters.clear()
+		}
+	}
+
 	const server = createServer(async (req, res) => {
+		inFlight += 1
+		res.once("close", onRequestSettled)
 		try {
 			const request = await toWebRequest(req, { host, port })
 			const response = await handler(request)
@@ -218,13 +250,35 @@ export const startOpenAIOAuthServer = async (
 	})
 
 	const address = resolveAddress(server.address() as AddressInfo, host)
+
+	const waitForDrain = (timeoutMs: number): Promise<void> => {
+		if (inFlight <= 0) {
+			return Promise.resolve()
+		}
+		return new Promise<void>((resolveDrain) => {
+			const finish = () => {
+				idleWaiters.delete(finish)
+				clearTimeout(timer)
+				resolveDrain()
+			}
+			const timer = setTimeout(finish, timeoutMs)
+			// Don't let a pending drain timer keep the process alive.
+			if (typeof timer.unref === "function") {
+				timer.unref()
+			}
+			idleWaiters.add(finish)
+		})
+	}
+
 	return {
 		server,
 		host: address.host,
 		port: address.port,
 		url: `http://${address.host}:${address.port}/v1`,
 		close: async () => {
-			await new Promise<void>((resolve, reject) => {
+			// 1. server.close() stops accepting NEW connections immediately; its
+			//    callback fires once all existing sockets have closed.
+			const closed = new Promise<void>((resolve, reject) => {
 				server.close((error) => {
 					if (error) {
 						reject(error)
@@ -234,6 +288,19 @@ export const startOpenAIOAuthServer = async (
 					resolve()
 				})
 			})
+
+			// 2. Free idle keep-alive sockets right away so they don't keep the
+			//    close() callback pending while we wait on real work.
+			server.closeIdleConnections?.()
+
+			// 3. Give in-flight requests (including streaming responses) a bounded
+			//    window to finish instead of cutting them off mid-flight.
+			await waitForDrain(10000)
+
+			// 4. Force-terminate anything still attached after the drain window.
+			server.closeAllConnections?.()
+
+			await closed
 			handler.requestLogger?.close?.()
 		},
 	}

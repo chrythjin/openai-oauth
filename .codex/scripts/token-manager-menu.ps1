@@ -131,8 +131,13 @@ function Normalize-Config($config) {
 		}
 	}
 
+	# Only assign a default label when one is missing. Preserve user-defined
+	# labels (e.g. the email-based labels created when adding a new vault slot)
+	# so they survive a reload.
 	for ($i = 0; $i -lt $existing.Count; $i++) {
-		$existing[$i].label = "Account $($i + 1)"
+		if ([string]::IsNullOrWhiteSpace($existing[$i].label)) {
+			$existing[$i].label = "Account $($i + 1)"
+		}
 	}
 
 	if ($existing.Count -gt 0 -and -not ($existing | Where-Object { $_.active })) {

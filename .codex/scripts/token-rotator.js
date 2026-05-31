@@ -103,7 +103,21 @@ function loadConfig() {
 	try {
 		const content = readFileSync(CONFIG_FILE, "utf-8")
 		parsed = JSON.parse(content.replace(/^\uFEFF/, ""))
-	} catch {
+	} catch (error) {
+		// Don't silently discard a corrupt config: back it up so the user's
+		// slot definitions can be recovered, then fall back to defaults.
+		try {
+			const timestamp = new Date().toISOString().replace(/[:.]/g, "-")
+			const brokenPath = getBackupPath(
+				`broken-config-${timestamp}-token-rotator-config.json`,
+			)
+			copyFileSync(CONFIG_FILE, brokenPath)
+			console.error(
+				`[Rotator] token-rotator-config.json was invalid (${
+					error instanceof Error ? error.message : String(error)
+				}); backed up to ${brokenPath} and reverted to defaults.`,
+			)
+		} catch {}
 		return DEFAULT_CONFIG
 	}
 
@@ -749,12 +763,28 @@ function runCodexLogin(tempAuthDir) {
 	const previousCodexHome = process.env.CODEX_HOME
 	process.env.CODEX_HOME = tempAuthDir
 
+	const env = { ...process.env, CODEX_HOME: tempAuthDir }
 	try {
-		execFileSync("npx", ["@openai/codex", "login"], {
-			cwd: REPO_ROOT,
-			stdio: "inherit",
-			env: { ...process.env, CODEX_HOME: tempAuthDir },
-		})
+		if (process.platform === "win32") {
+			// On Windows, `npx` is `npx.cmd`. execFileSync does not resolve the
+			// .cmd extension (and recent Node refuses to spawn .cmd without a
+			// shell), so go through cmd.exe like the PowerShell menu does.
+			execFileSync(
+				"cmd.exe",
+				["/d", "/s", "/c", "npx --yes @openai/codex login"],
+				{
+					cwd: REPO_ROOT,
+					stdio: "inherit",
+					env,
+				},
+			)
+		} else {
+			execFileSync("npx", ["--yes", "@openai/codex", "login"], {
+				cwd: REPO_ROOT,
+				stdio: "inherit",
+				env,
+			})
+		}
 	} finally {
 		if (previousCodexHome === undefined) {
 			delete process.env.CODEX_HOME

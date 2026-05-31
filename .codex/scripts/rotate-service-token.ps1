@@ -34,8 +34,14 @@ function Assert-AdminForAction {
 	if ($NoExit) { $argList += "-NoExit" }
 
 	# Elevate and wait so the caller sees the outcome in the new admin window.
-	Start-Process powershell -ArgumentList $argList -Verb RunAs -Wait
-	exit 0
+	# Capture the elevated process exit code and propagate it so callers
+	# (manage-tokens.bat, token-rotator.js) do not treat a failed elevated
+	# rotate/switch/restart as success.
+	$elevated = Start-Process powershell -ArgumentList $argList -Verb RunAs -Wait -PassThru
+	if ($null -eq $elevated) {
+		throw "Failed to launch elevated PowerShell for action '$RequestedAction'."
+	}
+	exit $elevated.ExitCode
 }
 
 function Get-RepoRoot {

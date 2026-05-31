@@ -185,12 +185,12 @@ function Test-ProcessAlive([int]$ProcessId) {
 }
 
 function Test-SessionProcessIdentity($Session) {
-	$pid = [int]$Session.pid
-	if ($pid -le 0) {
+	$processId = [int]$Session.pid
+	if ($processId -le 0) {
 		return $false
 	}
 	try {
-		$process = Get-CimInstance Win32_Process -Filter "ProcessId = $pid" -ErrorAction Stop
+		$process = Get-CimInstance Win32_Process -Filter "ProcessId = $processId" -ErrorAction Stop
 		if (-not $process) {
 			return $false
 		}
@@ -401,8 +401,8 @@ function Wait-Healthy([int]$TargetPort, [int]$Seconds = 20) {
 }
 
 function Stop-SessionProcess($Session) {
-	$pid = [int]$Session.pid
-	if ($pid -le 0 -or -not (Test-ProcessAlive $pid)) {
+	$processId = [int]$Session.pid
+	if ($processId -le 0 -or -not (Test-ProcessAlive $processId)) {
 		$Session.status = "stopped"
 		$Session.pid = 0
 		$Session.updatedAt = [DateTimeOffset]::Now.ToString("o")
@@ -411,12 +411,12 @@ function Stop-SessionProcess($Session) {
 
 	try {
 		Assert-SessionProcessIdentity $Session
-		$process = Get-Process -Id $pid -ErrorAction Stop
-		Stop-Process -Id $pid -ErrorAction Stop
+		$process = Get-Process -Id $processId -ErrorAction Stop
+		Stop-Process -Id $processId -ErrorAction Stop
 		$process.WaitForExit(5000)
 		if (-not $process.HasExited) {
 			if (-not $Force) {
-				throw "Proxy process $pid did not exit after Stop-Process. Re-run with -Force to terminate the process tree."
+				throw "Proxy process $processId did not exit after Stop-Process. Re-run with -Force to terminate the process tree."
 			}
 			$process.Kill($true)
 			$process.WaitForExit(5000)
